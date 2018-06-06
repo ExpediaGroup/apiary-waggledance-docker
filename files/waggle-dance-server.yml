@@ -6,9 +6,3 @@
 
 verbose: true
 database-resolution: PREFIXED
-graphite:
-  port: 2003
-  host: localhost
-  prefix: waggle-dance
-  poll-interval: 1000
-  poll-interval-time-unit: MILLISECONDS

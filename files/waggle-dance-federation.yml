@@ -9,3 +9,5 @@ primary-meta-store:
   database-prefix: ''
   name: local
   remote-meta-store-uris: thrift://localhost:9083
+  writable-database-white-list:
+  - default

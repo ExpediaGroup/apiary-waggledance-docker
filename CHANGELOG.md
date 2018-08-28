@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [1.0.0] - 2018-08-28
 ### Changed
-- Changed waggledance version from 2.3.1 to 2.4.22. See [#7](https://github.com/ExpediaInc/apiary-waggledance-docker/issues/7).
+- Changed waggledance version from 2.3.1 to 2.4.2. See [#7](https://github.com/ExpediaInc/apiary-waggledance-docker/issues/7).
 
 [Unreleased]: https://github.com/ExpediaInc/apiary-waggledance-docker/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/ExpediaInc/apiary-waggledance-docker/compare/efa2741...v1.0.0

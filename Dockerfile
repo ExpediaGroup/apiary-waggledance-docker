@@ -7,10 +7,13 @@ ENV JAVA_VERSION 1.8.0
 ENV WAGGLE_DANCE_VERSION 2.4.2
 ENV WAGGLE_DANCE_HOME /opt/waggle-dance
 
-RUN yum -y update && yum install -y java-${JAVA_VERSION}-openjdk && yum clean all
-RUN yum install -y procps
-RUN yum install -y util-linux
-RUN yum install -y http://search.maven.org/remotecontent?filepath=com/hotels/waggle-dance-rpm/"${WAGGLE_DANCE_VERSION}"/waggle-dance-rpm-"${WAGGLE_DANCE_VERSION}".rpm
+RUN yum -y update && \
+  yum install -y java-${JAVA_VERSION}-openjdk \
+    procps \
+    procps \
+    util-linux \
+    http://search.maven.org/remotecontent?filepath=com/hotels/waggle-dance-rpm/"${WAGGLE_DANCE_VERSION}"/waggle-dance-rpm-"${WAGGLE_DANCE_VERSION}".rpm && \
+  yum clean all
 
 COPY files/waggle-dance-server.yml "${WAGGLE_DANCE_HOME}"/conf/
 COPY files/waggle-dance-federation.yml "${WAGGLE_DANCE_HOME}"/conf/

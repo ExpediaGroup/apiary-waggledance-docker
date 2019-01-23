@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Changed
 - Upgrade WaggleDance version to `3.1.2`
 
+### Removed
+- `VERSION` file as we are using `tags` now.
+
 ## [1.0.0] - 2018-10-31
 ### Added
 - Support connection to cross-region federated metastore. See [#12](https://github.com/ExpediaInc/apiary-waggledance-docker/issues/12).

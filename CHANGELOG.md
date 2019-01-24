@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 ### Changed
-- Upgrade WaggleDance version to `3.1.2`
+- Upgrade WaggleDance version to `3.1.2`, was 3.0.0.
 
 ### Removed
 - `VERSION` file as we are using `tags` now.

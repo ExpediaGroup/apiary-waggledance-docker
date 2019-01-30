@@ -4,7 +4,7 @@
 FROM amazonlinux:latest
 
 ENV JAVA_VERSION 1.8.0
-ENV WAGGLE_DANCE_VERSION 3.0.0
+ENV WAGGLE_DANCE_VERSION 3.1.2
 ENV WAGGLE_DANCE_HOME /opt/waggle-dance
 
 RUN yum -y update && \

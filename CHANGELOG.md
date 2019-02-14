@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Auto configure Waggle Dance heapsize when running on ECS.
+
 ## [1.1.0] - 2019-01-30
 ### Changed
 - Upgrade WaggleDance version to `3.1.2`, was `3.0.0`.

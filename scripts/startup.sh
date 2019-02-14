@@ -8,6 +8,11 @@ WAGGLE_DANCE_HOME=/opt/waggle-dance
 
 [[ ! -z $FEDERATION_YAML ]] && echo $FEDERATION_YAML|base64 -d > ${WAGGLE_DANCE_HOME}/conf/waggle-dance-federation.yml
 
+#auto configure heapsize
+if [ ! -z ${ECS_CONTAINER_METADATA_URI} ]; then
+    export MEM_LIMIT=$(wget -q -O - ${ECS_CONTAINER_METADATA_URI}/task|jq -r .Limits.Memory)
+    export HEAPSIZE=$(expr $MEM_LIMIT \* 90 / 100)
+fi
 [[ -z $HEAPSIZE ]] && export HEAPSIZE=1024
 
 if [[ -n $BASTION_SSH_KEY_ARN ]] ; then
@@ -18,4 +23,4 @@ fi
 
 source "${WAGGLE_DANCE_HOME}"/service/waggle-dance-core-latest-exec.conf
 
-exec java -jar "${WAGGLE_DANCE_HOME}"/service/waggle-dance-core-latest-exec.jar  $JAVA_OPTS $RUN_ARGS
+exec java $JAVA_OPTS -jar "${WAGGLE_DANCE_HOME}"/service/waggle-dance-core-latest-exec.jar $RUN_ARGS

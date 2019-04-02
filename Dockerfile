@@ -4,13 +4,14 @@
 FROM amazonlinux:latest
 
 ENV JAVA_VERSION 1.8.0
-ENV WAGGLE_DANCE_VERSION 3.1.2
+ENV WAGGLE_DANCE_VERSION 3.2.0
 ENV WAGGLE_DANCE_HOME /opt/waggle-dance
 
 RUN yum -y update && \
   yum install -y java-${JAVA_VERSION}-openjdk \
     procps \
     awscli \
+    wget \
     util-linux \
     jq \
     http://search.maven.org/remotecontent?filepath=com/hotels/waggle-dance-rpm/"${WAGGLE_DANCE_VERSION}"/waggle-dance-rpm-"${WAGGLE_DANCE_VERSION}".rpm \

@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - TBD
+### Added
+- Install `wget` package. See [#18](https://github.com/ExpediaInc/apiary-waggledance-docker/issues/18).
+
+### Changed
+- Upgrade Waggle Dance version to `3.2.0`, was `3.1.2`. See [#17](https://github.com/ExpediaInc/apiary-waggledance-docker/issues/17).
+
 ## [1.1.1] - 2019-02-15
 ### Added
 - Auto configure Waggle Dance heapsize when running on ECS.

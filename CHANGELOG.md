@@ -5,10 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased] - TBD
 ### Added
-- Install `wget` package. See [#18](https://github.com/ExpediaInc/apiary-waggledance-docker/issues/18)
+- Install `wget` package. See [#18](https://github.com/ExpediaInc/apiary-waggledance-docker/issues/18).
 
 ### Changed
-- Upgrade Waggledance version to `3.2.0`, was `3.1.2`. See [#17](https://github.com/ExpediaInc/apiary-waggledance-docker/issues/17)
+- Upgrade Waggle Dance version to `3.2.0`, was `3.1.2`. See [#17](https://github.com/ExpediaInc/apiary-waggledance-docker/issues/17).
 
 ## [1.1.1] - 2019-02-15
 ### Added

@@ -23,4 +23,6 @@ fi
 
 source "${WAGGLE_DANCE_HOME}"/service/waggle-dance-core-latest-exec.conf
 
+[[ -n $ENABLE_PATH_CONVERSION_HOOK ]] && export JAVA_OPTS="$JAVA_OPTS -cp /opt/waggle-dance/jars/path-conversion-hook.jar"
+
 exec java $JAVA_OPTS -jar "${WAGGLE_DANCE_HOME}"/service/waggle-dance-core-latest-exec.jar $RUN_ARGS

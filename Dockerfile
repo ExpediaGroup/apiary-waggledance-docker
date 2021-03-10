@@ -18,7 +18,7 @@ RUN yum -y update && \
   && yum clean all \
   && rm -rf /var/cache/yum
 
-COPY files/path-conversion-hook-7.2.0-SNAPSHOT.jar "${WAGGLE_DANCE_HOME}"/jars/path-conversion-hook.jar
+COPY files/path-conversion-hook-7.2.0-SNAPSHOT.jar /usr/lib/jvm/jre/lib/ext/
 COPY files/waggle-dance-server.yml "${WAGGLE_DANCE_HOME}"/conf/
 COPY files/waggle-dance-federation.yml "${WAGGLE_DANCE_HOME}"/conf/
 COPY files/waggle-dance-core-latest-exec.conf "${WAGGLE_DANCE_HOME}"/service/

@@ -8,6 +8,8 @@ WAGGLE_DANCE_HOME=/opt/waggle-dance
 
 [[ ! -z $FEDERATION_YAML ]] && echo $FEDERATION_YAML|base64 -d > ${WAGGLE_DANCE_HOME}/conf/waggle-dance-federation.yml
 
+[[ ! -z $HIVE_SITE_XML ]] && echo $HIVE_SITE_XML|base64 -d > ${WAGGLE_DANCE_HOME}/conf/hive-site.xml
+
 #auto configure heapsize
 if [ ! -z ${ECS_CONTAINER_METADATA_URI} ]; then
     export MEM_LIMIT=$(wget -q -O - ${ECS_CONTAINER_METADATA_URI}/task|jq -r .Limits.Memory)
@@ -23,6 +25,6 @@ fi
 
 source "${WAGGLE_DANCE_HOME}"/service/waggle-dance-core-latest-exec.conf
 
-[[ -n $ENABLE_PATH_CONVERSION_HOOK ]] && export JAVA_OPTS="$JAVA_OPTS -cp /opt/waggle-dance/jars/path-conversion-hook.jar"
+[[ -n $HIVE_SITE_XML ]] && export JAVA_OPTS="$JAVA_OPTS -cp /opt/waggle-dance/jars/path-conversion-hook.jar"
 
 exec java $JAVA_OPTS -jar "${WAGGLE_DANCE_HOME}"/service/waggle-dance-core-latest-exec.jar $RUN_ARGS

@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [1.8.0] - 2021-03-18
 ### Added
-- Add apiary exetentions hive-hook jar to replace s3 paths as alluxio paths.
+- Add apiary extensions hive-hook jar to replace s3 paths as alluxio paths.
 
 =======
 ## [1.7.1] - 2021-03-15

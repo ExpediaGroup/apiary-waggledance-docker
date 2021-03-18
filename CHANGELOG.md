@@ -7,7 +7,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 - Add apiary extensions hive-hook jar to replace s3 paths as alluxio paths.
 
-=======
 ## [1.7.1] - 2021-03-15
 ### Changed
 - Upgrade Waggle Dance version to `3.9.3` (was `3.9.1`) to fix NullPointerException in `get_privilege_set` call.

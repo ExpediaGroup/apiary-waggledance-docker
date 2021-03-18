@@ -3,8 +3,10 @@
 
 FROM amazonlinux:latest
 
-ENV JAVA_VERSION 1.8.0
-ENV WAGGLE_DANCE_VERSION 3.9.3
+ARG JAVA_VERSION=1.8.0
+ARG WAGGLE_DANCE_VERSION=3.9.3
+ARG APIARY_EXTENSIONS_VERSION=7.2.0
+
 ENV WAGGLE_DANCE_HOME /opt/waggle-dance
 
 RUN yum -y update && \
@@ -14,9 +16,11 @@ RUN yum -y update && \
     wget \
     util-linux \
     jq \
-    http://search.maven.org/remotecontent?filepath=com/hotels/waggle-dance-rpm/"${WAGGLE_DANCE_VERSION}"/waggle-dance-rpm-"${WAGGLE_DANCE_VERSION}".rpm \
+    https://repo1.maven.org/maven2/com/hotels/waggle-dance-rpm/${WAGGLE_DANCE_VERSION}/waggle-dance-rpm-${WAGGLE_DANCE_VERSION}.rpm \
   && yum clean all \
   && rm -rf /var/cache/yum
+
+ADD https://repo1.maven.org/maven2/com/expediagroup/apiary/hive-hooks/${APIARY_EXTENSIONS_VERSION}/hive-hooks-${APIARY_EXTENSIONS_VERSION}.jar "${WAGGLE_DANCE_HOME}"/jars/
 
 COPY files/waggle-dance-server.yml "${WAGGLE_DANCE_HOME}"/conf/
 COPY files/waggle-dance-federation.yml "${WAGGLE_DANCE_HOME}"/conf/

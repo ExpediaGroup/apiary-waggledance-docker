@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.8.1] - 2021-03-30
+### Added
+- Environment variable to configure waggle-dance log level.
+
 ## [1.8.0] - 2021-03-18
 ### Added
 - Add apiary extensions hive-hook jar to replace s3 paths as alluxio paths.

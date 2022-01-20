@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [1.8.6] - 2022-01-20
 ### Changed
-- Upgrade Waggle Dance version to `3.9.9` (was `3.9.8`) fix log4j-shell vulnerabilities (upgrade log4j to `2.17.1`). https://logging.apache.org/log4j/2.x/security.html
+- Upgrade Waggle Dance version to `3.9.9` (was `3.9.8`) to fix log4j-shell vulnerabilities (upgrade `log4j` to `2.17.1`). https://logging.apache.org/log4j/2.x/security.html
 
 ## [1.8.5] - 2021-12-20
 ### Changed

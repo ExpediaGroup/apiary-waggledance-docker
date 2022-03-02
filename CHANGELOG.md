@@ -3,7 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [1.8.7] - 2022-03-01
+## [1.8.8] - 2022-03-02
+### Changed
+- Fixes 1.8.7 release build
+
+## [1.8.7] - 2022-03-01 [YANKED]
+- Yanked reason: an undetected build failure during release so docker image doesn't work.
 ### Changed
 - Upgrade Waggle Dance version to `3.10.9` (was `3.9.9`).
 - Upgrade APIARY_EXTENSIONS_VERSION to `7.2.5` was `7.2.2`

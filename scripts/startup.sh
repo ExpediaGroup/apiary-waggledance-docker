@@ -25,6 +25,9 @@ source "${WAGGLE_DANCE_HOME}"/service/waggle-dance-core-latest-exec.conf
 
 [[ -n $HIVE_SITE_XML ]] && echo $HIVE_SITE_XML|base64 -d > ${WAGGLE_DANCE_HOME}/jars/hive-site.xml
 
-sed "s/level=\".*\"/level=\"${LOGLEVEL:-info}\"/" -i /opt/waggle-dance/conf/log4j2.xml
+[[ -z "${INVOCATIONLOGLEVEL}" ]] && INVOCATIONLOGLEVEL=${LOGLEVEL:-info}
+
+sed "/invocation-log/!s/level=\".*\"/level=\"${LOGLEVEL:-info}\"/"    -i /opt/waggle-dance/conf/log4j2.xml
+sed "/invocation-log/s/level=\".*\"/level=\"${INVOCATIONLOGLEVEL}\"/" -i /opt/waggle-dance/conf/log4j2.xml
 
 exec java $JAVA_OPTS -jar "${WAGGLE_DANCE_HOME}"/service/waggle-dance-core-latest-exec.jar $RUN_ARGS

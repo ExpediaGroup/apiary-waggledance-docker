@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.8.10] - 2022-04-06
+### Changed
+- Upgrade Waggle Dance version to `3.10.1` (was `3.10.0`).
+
 ## [1.8.9] - 2022-04-06
 ### Changed
 - Add ability to configure invocation logs separately from other `log4j` loggers using `INVOCATIONLOGLEVEL`.
@@ -14,7 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ## [1.8.7] - 2022-03-01 [YANKED]
 - Yanked reason: an undetected build failure during release so docker image doesn't work.
 ### Changed
-- Upgrade Waggle Dance version to `3.10.9` (was `3.9.9`).
+- Upgrade Waggle Dance version to `3.10.0` (was `3.9.9`).
 - Upgrade APIARY_EXTENSIONS_VERSION to `7.2.5` was `7.2.2`
 
 ## [1.8.6] - 2022-01-20

@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.8.11] - 2022-04-19
+### Changed
+- Upgrade Waggle Dance version to `3.10.1` (was `3.10.1`) to addressing performance issues related to set_ugi calls.
+
 ## [1.8.10] - 2022-04-06
 ### Changed
 - Upgrade Waggle Dance version to `3.10.1` (was `3.10.0`) to addressing performance issues when running with a high number (> 10) of metastores.

@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [1.8.11] - 2022-04-19
 ### Changed
-- Upgrade Waggle Dance version to `3.10.1` (was `3.10.1`) to addressing performance issues related to set_ugi calls.
+- Upgrade Waggle Dance version to `3.10.2` (was `3.10.1`) to addressing performance issues related to set_ugi calls.
 
 ## [1.8.10] - 2022-04-06
 ### Changed

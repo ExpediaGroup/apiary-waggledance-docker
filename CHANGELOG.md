@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.8.13] - 2022-05-18
+### Changed
+- Upgrade Waggle Dance version to `3.10.4` (was `3.10.3`) to addressing set_ugi calls issues in Looker.
+
 ## [1.8.12] - 2022-05-16
 ### Changed
 - Upgrade Waggle Dance version to `3.10.3` (was `3.10.2`) to addressing nullpointer in set_ugi calls.

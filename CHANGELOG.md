@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.8.15] - 2022-05-27
+### Changed
+- Upgrade APIARY_EXTENSIONS_VERSION to `7.3.1` was `7.2.5`
+
 ## [1.8.14] - 2022-05-23
 ### Changed
 - Upgrade Waggle Dance version to `3.10.5` (was `3.10.4`) another performance fix for slow responding metastores.

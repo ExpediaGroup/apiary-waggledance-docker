@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.8.17] - 2022-06-07
+### Changed
+- Upgrade Waggle Dance version to `3.10.6` (was `3.10.5`) to fix db name translation in:
+  - `alter_partitions_with_environment_context`
+  - `alter_table_with_cascade`
+  
 ## [1.8.16] - 2022-05-31
 ### Changed
 - Upgrade APIARY_EXTENSIONS_VERSION to `7.3.2` was `7.3.1`

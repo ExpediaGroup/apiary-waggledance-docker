@@ -7,7 +7,7 @@ Please verify that:
 * [ ] There are new or updated unit tests validating the change.
 
 Refer to CODE-OF-CONDUCT.md for more details.
-  https://github.com/ExpediaGroup/apiary-metastore-docker/blob/master/CODE-OF-CONDUCT.md
+  https://github.com/ExpediaGroup/apiary-waggledance-docker/blob/master/CODE-OF-CONDUCT.md
 -->
 
 ### :pencil: Description

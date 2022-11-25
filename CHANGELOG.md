@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.8.18] - 2022-10-25
+### Changed
+- Upgrade Waggle Dance version to `3.10.8` (was `3.10.6`) to add AWS STS support.
+
 ## [1.8.17] - 2022-06-07
 ### Changed
 - Upgrade Waggle Dance version to `3.10.6` (was `3.10.5`) to fix db name translation in:

@@ -3,8 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [1.8.18] - 2022-10-25
+## [1.9.0] - 2022-10-25
 ### Changed
+- Added Github Actions to build and release. From now on Docker tag images will be `v1.0.0` instead of `1.0.0`.
 - Upgrade Waggle Dance version to `3.10.8` (was `3.10.6`) to add AWS STS support.
 
 ## [1.8.17] - 2022-06-07

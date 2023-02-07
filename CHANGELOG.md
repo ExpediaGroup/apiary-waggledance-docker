@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.9.3] - 2023-02-07
+### Changed
+- Upgrade Waggle Dance version to `3.10.11` (was `3.10.10`) to fix `show tables from <db>` when using Glue federations.
+
 ## [1.9.2] - 2022-12-01
 ### Changed
 - Upgrade Waggle Dance version to `3.10.10` (was `3.10.9`) to add AWS STS support.

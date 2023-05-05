@@ -1,10 +1,10 @@
 # Copyright (C) 2018 Expedia Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 
-FROM amazonlinux:latest
+FROM amazonlinux:2
 
 ARG JAVA_VERSION=1.8.0
-ARG WAGGLE_DANCE_VERSION=3.10.11
+ARG WAGGLE_DANCE_VERSION=3.10.12
 ARG APIARY_EXTENSIONS_VERSION=7.3.2
 
 ENV WAGGLE_DANCE_HOME /opt/waggle-dance

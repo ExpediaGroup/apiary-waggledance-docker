@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Changed
 - Added `allow-bean-definition-overriding` configuration as `true` due to springboot upgrade.
 
-## [1.9.4] - 2023-05-08 - YANKED
+## [1.9.4] - 2023-05-08 - [YANKED]
 ### Changed
 - Upgrade Waggle Dance version to `3.10.12` (was `3.10.11`) to upgrade `springboot` version.
 - Change `amazonlinux` tag to `2` (was `latest`) to keep the build consistent.

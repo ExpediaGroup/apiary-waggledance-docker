@@ -11,6 +11,3 @@ primary-meta-store:
   remote-meta-store-uris: thrift://localhost:9083
   writable-database-white-list:
   - default
-spring:
-  main:
-    allow-bean-definition-overriding: true

@@ -6,6 +6,3 @@
 
 verbose: true
 database-resolution: PREFIXED
-spring:
-  main:
-    allow-bean-definition-overriding: true

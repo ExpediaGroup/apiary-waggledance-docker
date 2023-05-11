@@ -4,9 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## [1.9.5] - 2023-05-09
+## [1.9.5] - 2023-05-11
 ### Changed
-- Added `allow-bean-definition-overriding` configuration as `true` due to springboot upgrade.
+- Upgrade `WAGGLE_DANCE_VERSION` to `3.10.14` (was `3.10.12`).
 
 ## [1.9.4] - 2023-05-08 - [YANKED]
 ### Changed

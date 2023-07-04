@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2023-07-04
+### Changed
+- Upgrade `WAGGLE_DANCE_VERSION` to `3.11.2` (was `3.10.14`).
+  - Support kerberos and delegation-token See [#264](https://github.com/ExpediaGroup/waggle-dance/issues/264).
+  - Upgrade version of snakeyaml to 1.32 (was 1.26).
+  - Clean up delegation-token set for Kerberos in thread-local.
+  - Setting AWSGlueClientFactory log level to `WARN` because it spams this [log](https://github.com/awslabs/aws-glue-data-catalog-client-for-apache-hive-metastore/blob/branch-3.4.0/aws-glue-datacatalog-client-common/src/main/java/com/amazonaws/glue/catalog/metastore/AWSGlueClientFactory.java#L57) every ~200ms. It could be creating unnecessary Glue clients.
 
 ## [1.9.5] - 2023-05-11
 ### Changed

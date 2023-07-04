@@ -3,7 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [1.10.0] - 2023-07-04
+## [1.10.1] - 2023-07-04
+### Changed
+- Waggledance jar was not available from Sonatype.
+
+## [1.10.0] - 2023-07-04 - [YANKED]
 ### Changed
 - Upgrade `WAGGLE_DANCE_VERSION` to `3.11.2` (was `3.10.14`).
   - Support kerberos and delegation-token See [#264](https://github.com/ExpediaGroup/waggle-dance/issues/264).

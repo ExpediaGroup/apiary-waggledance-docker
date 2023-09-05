@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.10.2] - 2023-09-05
+### Changed
+- Upgrade `WAGGLE_DANCE_VERSION` to `3.11.4` (was `3.11.2`).
+- sends metrics with tags.
+
 ## [1.10.1] - 2023-07-04
 ### Changed
 - Waggledance jar was not available from Sonatype.

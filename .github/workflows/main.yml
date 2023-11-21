@@ -1,13 +1,20 @@
 name: Docker Test Build
 
-on: [pull_request]
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      pushImage:
+        description: "Push docker image? (default is: false)"
+        required: false
+        default: 'false'
 
 jobs:
   apiary-docker-image:
     name: Apiary Docker Image Checks
     runs-on: ubuntu-22.04
     steps:
-    - name: Check out code  
+    - name: Check out code
       uses: actions/checkout@v2
 
     - name: Ensure Apiary Docker Image Builds.
@@ -15,4 +22,4 @@ jobs:
       with:
         dockerfile: "Dockerfile"
         always_pull: true
-        push: false
+        push: ${{ github.event.inputs.pushImage }}

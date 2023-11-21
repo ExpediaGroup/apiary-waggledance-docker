@@ -16,4 +16,8 @@ jobs:
       with:
         dockerfile: "Dockerfile"
         always_pull: true
+        tag_with_ref: true
+        repository: expediagroup/apiary-waggledance
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
         push: true

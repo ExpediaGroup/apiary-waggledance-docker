@@ -2,12 +2,6 @@ name: Docker Test Build
 
 on:
   pull_request:
-  workflow_dispatch:
-    inputs:
-      pushImage:
-        description: "Push docker image? (default is: false)"
-        required: false
-        default: 'false'
 
 jobs:
   apiary-docker-image:
@@ -22,4 +16,4 @@ jobs:
       with:
         dockerfile: "Dockerfile"
         always_pull: true
-        push: ${{ github.event.inputs.pushImage }}
+        push: true

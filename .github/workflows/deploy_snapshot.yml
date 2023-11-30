@@ -1,4 +1,4 @@
-name: Docker Snapshot Build/Release
+name: Docker Snapshot Release
 
 on:
   workflow_dispatch:

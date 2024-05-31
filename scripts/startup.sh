@@ -30,4 +30,14 @@ source "${WAGGLE_DANCE_HOME}"/service/waggle-dance-core-latest-exec.conf
 sed "/invocation-log/!s/level=\".*\"/level=\"${LOGLEVEL:-info}\"/"    -i /opt/waggle-dance/conf/log4j2.xml
 sed "/invocation-log/s/level=\".*\"/level=\"${INVOCATIONLOGLEVEL}\"/" -i /opt/waggle-dance/conf/log4j2.xml
 
+if [[ -n $DD_PROFILING_ENABLED  &&  "$DD_PROFILING_ENABLED" = "true" ]]; then
+  # To enable the Datadog Java Agent, the following environment variables must be set at runtime:
+  # DD_PROFILING_ENABLED=true
+  # DD_SERVICE=service-name
+  # DD_ENV=env-name
+  # DD_VERSION=version
+  export JAVA_OPTS="$JAVA_OPTS -javaagent:/opt/waggle-dance/jars/dd-java-agent.jar -XX:FlightRecorderOptions=stackdepth=256 -Ddd.profiling.enabled=${DD_PROFILING_ENABLED} -Ddd.service=${DD_SERVICE} -Ddd.env=${DD_ENV} -Ddd.version=${DD_VERSION}"
+  export JAVA_OPTS="$JAVA_OPTS --add-opens java.base/java.lang=ALL-UNNAMED"
+fi
+
 exec java $JAVA_OPTS -jar "${WAGGLE_DANCE_HOME}"/service/waggle-dance-core-latest-exec.jar $RUN_ARGS

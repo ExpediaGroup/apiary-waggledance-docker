@@ -37,6 +37,7 @@ if [[ -n $DD_PROFILING_ENABLED  &&  "$DD_PROFILING_ENABLED" = "true" ]]; then
   # DD_ENV=env-name
   # DD_VERSION=version
   export JAVA_OPTS="$JAVA_OPTS -javaagent:/opt/waggle-dance/jars/dd-java-agent.jar -XX:FlightRecorderOptions=stackdepth=256 -Ddd.profiling.enabled=${DD_PROFILING_ENABLED} -Ddd.service=${DD_SERVICE} -Ddd.env=${DD_ENV} -Ddd.version=${DD_VERSION}"
+  export JAVA_OPTS="$JAVA_OPTS --add-opens java.base/java.lang=ALL-UNNAMED"
 fi
 
 exec java $JAVA_OPTS -jar "${WAGGLE_DANCE_HOME}"/service/waggle-dance-core-latest-exec.jar $RUN_ARGS

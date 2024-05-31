@@ -1,7 +1,7 @@
 # Copyright (C) 2018 Expedia Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 
-FROM amazonlinux:2
+FROM amazoncorretto:17
 
 ARG JAVA_VERSION=1.8.0
 ARG WAGGLE_DANCE_VERSION=3.13.1
@@ -11,9 +11,7 @@ ARG DD_JAVA_AGENT_VERSION=1.34.0
 ENV WAGGLE_DANCE_HOME /opt/waggle-dance
 
 RUN yum -y update && \
-  yum install -y java-${JAVA_VERSION}-openjdk \
-    procps \
-    awscli \
+  yum install -y procps \
     wget \
     util-linux \
     jq \

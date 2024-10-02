@@ -4,7 +4,7 @@
 FROM amazonlinux:2
 
 ARG JAVA_VERSION=1.8.0
-ARG WAGGLE_DANCE_VERSION=3.13.1
+ARG WAGGLE_DANCE_VERSION=3.13.3
 ARG APIARY_EXTENSIONS_VERSION=7.3.2
 
 ENV WAGGLE_DANCE_HOME /opt/waggle-dance
@@ -16,7 +16,7 @@ RUN yum -y update && \
     wget \
     util-linux \
     jq \
-    https://oss.sonatype.org/content/repositories/snapshots/com/hotels/waggle-dance-rpm/3.13.3-SNAPSHOT/waggle-dance-rpm-3.13.3-20241001.133102-2.rpm \
+    https://repo1.maven.org/maven2/com/hotels/waggle-dance-rpm/${WAGGLE_DANCE_VERSION}/waggle-dance-rpm-${WAGGLE_DANCE_VERSION}.rpm \
   && yum clean all \
   && rm -rf /var/cache/yum
 

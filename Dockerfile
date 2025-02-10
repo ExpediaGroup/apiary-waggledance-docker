@@ -16,7 +16,7 @@ RUN yum -y update && \
     wget \
     util-linux \
     jq \i
-    https://oss.sonatype.org/content/repositories/snapshots/com/hotels/waggle-dance-rpm/3.11.8-SNAPSHOT/waggle-dance-rpm-4.0.0-20250210.154030-2.rpm \
+    https://oss.sonatype.org/content/repositories/snapshots/com/hotels/waggle-dance-rpm/4.0.0-SNAPSHOT/waggle-dance-rpm-4.0.0-20250210.154030-2.rpm \
   && yum clean all \
   && rm -rf /var/cache/yum
 

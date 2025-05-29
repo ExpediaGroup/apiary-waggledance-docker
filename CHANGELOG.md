@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.12.4] - 2025-05-28
+### Changed
+- Upgrade `WAGGLE_DANCE_VERSION` to `3.13.7` (was `3.13.4`). See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)
+
 ## [1.12.3] - 2024-10-04
 ### Changed
 - Upgrade `WAGGLE_DANCE_VERSION` to `3.13.4` (was `3.13.3`). See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)

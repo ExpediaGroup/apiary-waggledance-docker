@@ -5,7 +5,7 @@ on:
 
 jobs:
   apiary-docker-image:
-    name: Apiary WaggleDance Docker Image Checks
+    name: Apiary WaggleDance Docker Image Snapshot
     runs-on: ubuntu-22.04
     steps:
     - name: Check out code
@@ -19,7 +19,7 @@ jobs:
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
-      
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
   

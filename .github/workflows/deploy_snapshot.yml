@@ -26,5 +26,5 @@ jobs:
         context: .
         dockerfile: "Dockerfile"
         platforms: linux/amd64,linux/arm64
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/expediagroup/apiary-waggledance:${{ github.sha }}
+        tags: expediagroup/apiary-waggledance:${{ github.sha }}
         push: true

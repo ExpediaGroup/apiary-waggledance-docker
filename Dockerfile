@@ -16,7 +16,7 @@ RUN yum -y update && \
     wget \
     util-linux \
     jq \
-    https://repo1.maven.org/maven2/com/expediagroup /waggle-dance-rpm/${WAGGLE_DANCE_VERSION}/waggle-dance-rpm-${WAGGLE_DANCE_VERSION}.rpm \
+    https://repo1.maven.org/maven2/com/expediagroup/waggle-dance-rpm/${WAGGLE_DANCE_VERSION}/waggle-dance-rpm-${WAGGLE_DANCE_VERSION}.rpm \
   && yum clean all \
   && rm -rf /var/cache/yum
 

@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.13.0] - 2025-07-22
+### Changed
+- Upgrade `WAGGLE_DANCE_VERSION` to `4.0.2` (was `3.13.8`). See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)
+- Switches to new WD using Hive3 libraries (Hive2 compatible).
+- Switches to new WD groupId `com.expediagroup` (was `com.hotels`).
+- Added support for `WDLOGLEVEL` environment variable to set the log level of Waggle Dance package.
+
 ## [1.12.5] - 2025-06-03
 ### Changed
 - Upgrade `WAGGLE_DANCE_VERSION` to `3.13.8` (was `3.13.7`). See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)

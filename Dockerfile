@@ -7,7 +7,7 @@ ARG JAVA_VERSION=1.8.0
 ARG WAGGLE_DANCE_VERSION=4.0.3
 ARG APIARY_EXTENSIONS_VERSION=7.3.2
 
-ENV WAGGLE_DANCE_HOME /opt/waggle-dance
+ENV WAGGLE_DANCE_HOME=/opt/waggle-dance
 
 RUN yum -y update && \
   yum install -y java-${JAVA_VERSION}-openjdk \

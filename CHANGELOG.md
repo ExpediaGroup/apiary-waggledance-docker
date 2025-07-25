@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.13.1] - 2025-07-28
+### Changed
+- Upgraded the base docker image to amazonlinux:2023
+- Upgraded to Java 17 Amazon Corretto
+- Switched from xml to yaml Log4j config for better readability
+- Renamed env vars controlling Log Levels to have consistent naming
+### 
+- Added an option to use the default JSON layout in Log4j
+- Added the datadog java agent for optional profiling
+  
 ## [1.13.0] - 2025-07-22
 ### Changed
 - Upgrade `WAGGLE_DANCE_VERSION` to `4.0.2` (was `3.13.8`). See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)

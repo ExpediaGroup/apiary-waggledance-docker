@@ -25,12 +25,29 @@ source "${WAGGLE_DANCE_HOME}"/service/waggle-dance-core-latest-exec.conf
 
 [[ -n $HIVE_SITE_XML ]] && echo $HIVE_SITE_XML|base64 -d > ${WAGGLE_DANCE_HOME}/jars/hive-site.xml
 
-[[ -z "${INVOCATIONLOGLEVEL}" ]] && INVOCATIONLOGLEVEL=${LOGLEVEL:-info}
-[[ -z "${WDLOGLEVEL}" ]] && WDLOGLEVEL=${LOGLEVEL:-info}
+# Configure logging format based on environment variable
+if [[ "${LOGGING_STRUCTURED_FORMAT_CONSOLE}" == "json" ]]; then
+    export LOG4J_APPENDER="STDOUT-JSON"
+    echo "Using JSON structured logging"
+else
+    export LOG4J_APPENDER="STDOUT-TEXT"
+    echo "Using text pattern logging"
+fi
 
-sed "/invocation-log/!s/level=\".*\"/level=\"${LOGLEVEL:-info}\"/"    -i /opt/waggle-dance/conf/log4j2.xml
-sed "/invocation-log/s/level=\".*\"/level=\"${INVOCATIONLOGLEVEL}\"/" -i /opt/waggle-dance/conf/log4j2.xml
-# Allow override of WaggleDance package logs.
-sed "/<Logger name=\"com.hotels.bdp.waggledance\"/s/level=\".*\"/level=\"${WDLOGLEVEL}\"/" -i /opt/waggle-dance/conf/log4j2.xml
+if [[ "${LOG4J_DEBUG:-false}" == "true" ]]; then
+    JAVA_OPTS="$JAVA_OPTS -Dlog4j2.debug=true"
+    echo "Log4j2 debug mode enabled"
+fi
+
+if [[ -n $DD_PROFILING_ENABLED && "$DD_PROFILING_ENABLED" = "true" ]]; then
+  # To enable the Datadog Java Agent, the following environment variables must be set at runtime:
+  # DD_PROFILING_ENABLED=true
+  # DD_SERVICE=service-name
+  # DD_ENV=env-name
+  # DD_VERSION=version
+  export JAVA_OPTS="$JAVA_OPTS -javaagent:/opt/waggle-dance/jars/dd-java-agent.jar -XX:FlightRecorderOptions=stackdepth=256 -Ddd.profiling.enabled=${DD_PROFILING_ENABLED} -Ddd.service=${DD_SERVICE} -Ddd.env=${DD_ENV} -Ddd.version=${DD_VERSION}"
+fi  
+
+echo "=== Starting Waggle Dance ==="
 
 exec java $JAVA_OPTS -jar "${WAGGLE_DANCE_HOME}"/service/waggle-dance-core-latest-exec.jar $RUN_ARGS

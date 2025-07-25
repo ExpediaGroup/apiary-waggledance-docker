@@ -11,7 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - Renamed env vars controlling Log Levels to have consistent naming
 ### 
 - Added an option to use the default JSON layout in Log4j
-
+- Added the datadog java agent for optional profiling
+  
 ## [1.13.0] - 2025-07-22
 ### Changed
 - Upgrade `WAGGLE_DANCE_VERSION` to `4.0.2` (was `3.13.8`). See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)

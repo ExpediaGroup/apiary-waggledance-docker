@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.13.1] - 2025-08-14
+### Changed
+- Upgrade `WAGGLE_DANCE_VERSION` to `4.0.4` (was `4.0.3`). See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)
+- Upgrade `APIARY_EXTENSIONS_VERSION` to `8.1.10` was `7.3.2` See [Changelog](https://github.com/ExpediaGroup/apiary-extensions/blob/5e279fb324352fa6810649c8a94a9414937e55d2/CHANGELOG.md)
+
 ## [1.13.0] - 2025-07-22
 ### Changed
 - Upgrade `WAGGLE_DANCE_VERSION` to `4.0.2` (was `3.13.8`). See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)

@@ -16,7 +16,6 @@ RUN yum -y update && \
     wget \
     util-linux \
     jq \
-    /tmp/waggle-dance-rpm-4.1.1-20251015.132842-2.rpm \
   && yum clean all \
   && rm -rf /var/cache/yum
 

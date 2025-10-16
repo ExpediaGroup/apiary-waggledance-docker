@@ -9,6 +9,7 @@ ARG APIARY_EXTENSIONS_VERSION=8.1.10
 
 ENV WAGGLE_DANCE_HOME=/opt/waggle-dance
 
+RUN wget https://central.sonatype.com/repository/maven-snapshots/com/expediagroup/waggle-dance-rpm/4.1.1-SNAPSHOT/waggle-dance-rpm-4.1.1-20251015.132842-2.rpm -O /tmp/waggle-dance-rpm-4.1.1-20251015.132842-2.rpm
 RUN yum -y update && \
   yum install -y java-${JAVA_VERSION}-openjdk \
     procps \
@@ -16,7 +17,7 @@ RUN yum -y update && \
     wget \
     util-linux \
     jq \
-    https://central.sonatype.com/repository/maven-snapshots/com/expediagroup/waggle-dance-rpm/4.1.1-SNAPSHOT/waggle-dance-rpm-4.1.1-20251015.132842-2.rpm \
+    /tmp/waggle-dance-rpm-4.1.1-20251015.132842-2.rpm \
   && yum clean all \
   && rm -rf /var/cache/yum
 

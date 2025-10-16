@@ -9,19 +9,18 @@ ARG APIARY_EXTENSIONS_VERSION=8.1.10
 
 ENV WAGGLE_DANCE_HOME=/opt/waggle-dance
 
-RUN yum -y update && \
-  yum install -y java-${JAVA_VERSION}-openjdk \
+RUN yum -y update \
+  && yum -y install ca-certificates \
+  && update-ca-trust \
+  && yum install -y java-${JAVA_VERSION}-openjdk \
     procps \
     awscli \
     wget \
     util-linux \
     jq \
-    /tmp/waggle-dance-rpm-4.1.1-20251015.132842-2.rpm \
+    https://central.sonatype.com/repository/maven-snapshots/com/expediagroup/waggle-dance-rpm/4.1.1-SNAPSHOT/waggle-dance-rpm-4.1.1-20251015.132842-2.rpm \
   && yum clean all \
-  && rm -rf /var/cache/yum
-
-RUN wget https://central.sonatype.com/repository/maven-snapshots/com/expediagroup/waggle-dance-rpm/4.1.1-SNAPSHOT/waggle-dance-rpm-4.1.1-20251015.132842-2.rpm -O /tmp/waggle-dance-rpm-4.1.1-20251015.132842-2.rpm
-RUN yum install -y /tmp/waggle-dance-rpm-4.1.1-20251015.132842-2.rpm
+  && rm -rf /var/cache/yum \
 
 ADD https://repo1.maven.org/maven2/com/expediagroup/apiary/hive-hooks/${APIARY_EXTENSIONS_VERSION}/hive-hooks-${APIARY_EXTENSIONS_VERSION}.jar "${WAGGLE_DANCE_HOME}"/jars/
 

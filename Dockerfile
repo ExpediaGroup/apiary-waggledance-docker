@@ -19,8 +19,8 @@ RUN yum -y update && \
   && yum clean all \
   && rm -rf /var/cache/yum
 
-RUN wget https://central.sonatype.com/repository/maven-snapshots/com/expediagroup/waggle-dance-rpm/4.1.1-SNAPSHOT/waggle-dance-rpm-4.1.1-20251027.092815-6.rpm -O /tmp/waggle-dance-rpm-4.1.1-20251027.092815-6.rpm
-RUN yum install -y /tmp/waggle-dance-rpm-4.1.1-20251027.092815-6.rpm
+RUN wget https://central.sonatype.com/repository/maven-snapshots/com/expediagroup/waggle-dance-rpm/4.1.1-SNAPSHOT/waggle-dance-rpm-4.1.1-20251028.160413-11.rpm -O /tmp/waggle-dance-rpm-4.1.1-20251028.160413-11.rpm
+RUN yum install -y /tmp/waggle-dance-rpm-4.1.1-20251028.160413-11.rpm
 
 ADD https://repo1.maven.org/maven2/com/expediagroup/apiary/hive-hooks/${APIARY_EXTENSIONS_VERSION}/hive-hooks-${APIARY_EXTENSIONS_VERSION}.jar "${WAGGLE_DANCE_HOME}"/jars/
 

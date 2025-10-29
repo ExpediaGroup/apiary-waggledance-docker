@@ -8,7 +8,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Changed
 - Upgrade `WAGGLE_DANCE_VERSION` to `4.1.1` (was `4.1.0`). See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)
 
-
 ## [1.14.0] - 2025-09-23
 ### Changed
 - Upgrade `WAGGLE_DANCE_VERSION` to `4.1.0` (was `4.0.4`). See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)

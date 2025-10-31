@@ -4,7 +4,7 @@
 FROM amazonlinux:2
 
 ARG JAVA_VERSION=1.8.0
-ARG WAGGLE_DANCE_VERSION=4.1.1-SNAPSHOT
+ARG WAGGLE_DANCE_VERSION=4.1.2-SNAPSHOT
 ARG APIARY_EXTENSIONS_VERSION=8.1.10
 
 ENV WAGGLE_DANCE_HOME=/opt/waggle-dance
@@ -19,8 +19,8 @@ RUN yum -y update && \
   && yum clean all \
   && rm -rf /var/cache/yum
 
-RUN wget https://central.sonatype.com/repository/maven-snapshots/com/expediagroup/waggle-dance-rpm/4.1.1-SNAPSHOT/waggle-dance-rpm-4.1.1-20251028.160413-11.rpm -O /tmp/waggle-dance-rpm-4.1.1-20251028.160413-11.rpm
-RUN yum install -y /tmp/waggle-dance-rpm-4.1.1-20251028.160413-11.rpm
+RUN wget https://central.sonatype.com/repository/maven-snapshots/com/expediagroup/waggle-dance-rpm/4.1.2-SNAPSHOT/waggle-dance-api-4.1.2-20251031.103521-9.rpm -O /tmp/waggle-dance-api-4.1.2-20251031.103521-9.rpm
+RUN yum install -y /tmp/waggle-dance-api-4.1.2-20251031.103521-9.rpm
 
 ADD https://repo1.maven.org/maven2/com/expediagroup/apiary/hive-hooks/${APIARY_EXTENSIONS_VERSION}/hive-hooks-${APIARY_EXTENSIONS_VERSION}.jar "${WAGGLE_DANCE_HOME}"/jars/
 

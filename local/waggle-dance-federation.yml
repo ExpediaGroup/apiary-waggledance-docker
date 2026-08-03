@@ -1,0 +1,18 @@
+# Copyright (C) 2018 Expedia Inc.
+# Licensed under the Apache License, Version 2.0 (the "License");
+
+# Local test federation: primary metastore is AWS Glue, pointed at a mock
+# Glue endpoint (moto) instead of a real AWS account.
+# Mirrors the glue-config shape used in federated-data-lake's
+# templates/waggledance/_waggledance_federation_template.tpl
+
+primary-meta-store:
+  name: primary
+  database-prefix: ''
+  access-control-type: READ_ONLY
+  latency: 5000
+  glue-config:
+    glue-account-id: '123456789012'
+    glue-endpoint: http://moto:5000
+
+federated-meta-stores: []

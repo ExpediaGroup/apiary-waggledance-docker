@@ -29,3 +29,6 @@ target/
 
 # AWS credentials
 *.pem
+
+# Locally built jars for testing unreleased WaggleDance changes (see local/docker-compose.yml)
+local/jars/

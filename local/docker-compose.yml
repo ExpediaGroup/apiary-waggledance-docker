@@ -1,0 +1,61 @@
+# Local test stack: WaggleDance federated to a mock AWS Glue (moto).
+# Uses the published expediagroup/apiary-waggledance image rather than
+# building locally (local Docker builds of this Dockerfile fail under
+# corporate TLS-interception proxies that the base image's yum repos don't
+# trust). Swap `image:` for a `build:` block once that's sorted, or to test
+# an unreleased change to files/waggle-dance-federation.yml or the Dockerfile.
+#
+# Moto (not localstack) is used to mock Glue: localstack's community edition
+# returns 501 for all glue:* APIs (Glue is a Pro-only feature there).
+#
+# Usage:
+#   docker compose -f local/docker-compose.yml up -d
+#   local/seed-glue.sh          # create test dbs/tables in the mock Glue catalog
+#   local/query-waggledance.sh  # confirm WaggleDance sees them via the thrift API
+#   docker compose -f local/docker-compose.yml exec hive-client hive \
+#     --hiveconf hive.metastore.uris=thrift://waggledance:48869   # interactive Hive CLI against WD
+
+services:
+  moto:
+    image: motoserver/moto:latest
+    ports:
+      - "5000:5000"
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  waggledance:
+    image: expediagroup/apiary-waggledance:v1.14.6
+    depends_on:
+      moto:
+        condition: service_healthy
+    ports:
+      - "48869:48869"
+    environment:
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_REGION: us-east-1
+      AWS_DEFAULT_REGION: us-east-1
+      LOGLEVEL: info
+    volumes:
+      - ./waggle-dance-federation.yml:/opt/waggle-dance/conf/waggle-dance-federation.yml:ro
+      # Overrides the image's bundled jar with a locally built one, to test
+      # unreleased WaggleDance changes without rebuilding the Docker image.
+      # Build it with: cd <waggle-dance-repo> && JAVA_HOME=<jdk8> mvn -pl waggle-dance-boot -am -DskipTests package
+      # then copy waggle-dance-boot/target/waggle-dance-boot-*-exec.jar to local/jars/waggle-dance-core-latest-exec.jar
+#      - ./jars/waggle-dance-core-latest-exec.jar:/opt/waggle-dance/service/waggle-dance-core-latest-exec.jar:ro
+
+  hive-client:
+    image: apache/hive:3.1.3
+    depends_on:
+      - waggledance
+    entrypoint: ["sleep", "infinity"]
+
+networks:
+  default:
+    # Named explicitly (no underscore) because compose's default
+    # "<dir>_default" network name leaks into reverse-DNS lookups, and
+    # Hive's metastore client rejects underscores as illegal in a URI host.
+    name: waggledance-local

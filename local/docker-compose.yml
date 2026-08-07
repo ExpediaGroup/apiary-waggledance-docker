@@ -27,7 +27,7 @@ services:
       retries: 20
 
   waggledance:
-    image: expediagroup/apiary-waggledance:v1.14.6
+    image: expediagroup/apiary-waggledance:v1.14.9
     depends_on:
       moto:
         condition: service_healthy

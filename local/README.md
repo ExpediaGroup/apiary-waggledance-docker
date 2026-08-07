@@ -79,6 +79,9 @@ local/seed-glue.sh
 # Confirm WaggleDance sees them over its thrift API
 local/query-waggledance.sh
 
+# Test the get_partitions_by_filter date-quoting fix (PR #9) directly
+local/test-get-partitions-by-filter.sh
+
 # Tear down
 docker compose -f local/docker-compose.yml down
 ```
@@ -91,7 +94,7 @@ Run one-off commands:
 docker compose -f local/docker-compose.yml exec hive-client \
   hive --hiveconf hive.metastore.uris=thrift://waggledance:48869 \
        --hiveconf hive.execution.engine=mr \
-       -e "show databases; use testdb; show tables;"
+       -e "show databases like '*'; use testdb; show tables;"
 ```
 
 Or drop into an interactive session:
@@ -132,6 +135,139 @@ library, not of WaggleDance or this compose setup. `show tables;` and
 `use <db>;` are unaffected (they go through `get_all_tables`/`get_database`,
 not the pattern-matching path).
 
+## Date-partition filter quoting (PR #9)
+
+[`aws-glue-data-catalog-client-for-apache-hive-metastore#9`](https://github.com/ExpediaGroup/aws-glue-data-catalog-client-for-apache-hive-metastore/pull/9)
+fixed a bug where Hive/Spark clients push date-partition predicates through
+`get_partitions_by_filter` with unquoted date literals (e.g.
+`event_date >= 2026-02-02`), which Glue's `Expression` grammar rejects as
+arithmetic. Seen in production via WaggleDance as `InvalidObjectException:
+Unsupported expression '...'`, surfaced to Hive clients as an opaque
+`TApplicationException: Internal error processing get_partitions_by_filter`
+(`InvalidObjectException` isn't declared on that Thrift method).
+
+**Verified directly against this stack**, keyed off the WaggleDance version
+pinned in `docker-compose.yml`:
+- **v1.14.8 (WaggleDance 4.1.8) and earlier**: reproduces the bug — debug
+  wire logs (`LOGLEVEL: debug`) show the `Expression` field reaching moto
+  unquoted, and moto's own `GetPartitions` grammar rejects it with
+  `InvalidInputException: Unsupported expression`, matching real Glue's
+  behavior.
+- **v1.14.9 (WaggleDance 4.1.9) and later**: does not reproduce — the
+  `Expression` field arrives pre-quoted (`event_date >= '2026-02-02'`) and
+  the call succeeds. This predates PR #9 actually merging upstream (the WD
+  4.1.9 tag was cut 2026-08-03, PR #9 merged 2026-08-06), so the fix was
+  evidently applied to WaggleDance's local `lib/*.jar` build before it was
+  formally upstreamed into the fork's git history — the pinned dependency
+  coordinate
+  (`com.amazonaws.glue:aws-glue-datacatalog-hive3-client:3.4.0-WD-1`) is a
+  local, non-immutable Maven coordinate, so its version string doesn't
+  track this.
+
+**This isn't reproducible via `hive-client`'s Hive CLI.** Confirmed via
+debug wire logs: Hive CLI's own partition pruning calls
+`get_partitions_by_expr` (the byte[]/serialized-expression path), never
+`get_partitions_by_filter` (the String path PR #9 fixed) — that path was
+never broken. There's also no way to *type* the actual bug into HQL: an
+unquoted literal like `event_date >= 2026-02-02` doesn't reach the
+metastore as a bare date string the way Spark 3.2's pushdown does; Hive's
+own SQL parser instead evaluates it as arithmetic and sends Glue
+`(UDFToString(event_date) >= '2022')` (`2026 - 02 - 02 = 2022`) — a real
+but unrelated Hive parser quirk.
+
+**To genuinely exercise the fixed `get_partitions_by_filter` path**, run
+`local/test-get-partitions-by-filter.sh`. It calls `get_partitions_by_filter`
+directly over thrift (via a throwaway `hmsclient` container, no host
+installs), bypassing HQL parsing entirely — the same way Spark's pushdown
+does — with 6 bare-literal filter shapes plus 2 already-quoted controls,
+against `testdb.date_partition_filter_repro`:
+
+```bash
+local/test-get-partitions-by-filter.sh
+```
+
+Verified results:
+- **v1.14.9 (WaggleDance 4.1.9, current pin)**: all 8 shapes `OK`.
+- **v1.14.8 (WaggleDance 4.1.8)**: the 6 bare-literal shapes
+  `FAILED: TApplicationException -- Internal error processing
+  get_partitions_by_filter`; the 2 already-quoted controls still `OK`
+  (confirming they were never broken, and this is a real regression test
+  rather than a config artifact).
+
+### General partition-pruning sanity check (Hive CLI)
+
+You can also run `WHERE`-clause queries against
+`testdb.date_partition_filter_repro` via `hive-client` — covers every
+predicate shape representable against that schema, all via
+`get_partitions_by_expr` (not the path above, see caveat below):
+
+```bash
+docker compose -f local/docker-compose.yml exec hive-client \
+  hive --hiveconf hive.metastore.uris=thrift://waggledance:48869 \
+       --hiveconf hive.execution.engine=mr \
+       -e "use testdb;
+select * from date_partition_filter_repro where event_date = '2026-02-02';
+select * from date_partition_filter_repro where event_date > '2026-02-02';
+select * from date_partition_filter_repro where event_date >= '2026-02-02';
+select * from date_partition_filter_repro where event_date < '2026-08-04';
+select * from date_partition_filter_repro where event_date <= '2026-08-04';
+select * from date_partition_filter_repro where event_date >= '2026-02-02' and event_date < '2026-08-04';
+select * from date_partition_filter_repro where event_date in ('2026-01-01','2026-02-02','2026-03-01');
+select * from date_partition_filter_repro where event_date not in ('2026-01-01','2026-02-02');
+select * from date_partition_filter_repro where event_date between '2026-02-02' and '2026-08-04';
+select * from date_partition_filter_repro where event_date BETWEEN '2026-02-02' AND '2026-08-04';
+select * from date_partition_filter_repro where event_date not between '2026-02-02' and '2026-08-04';"
+```
+
+Caveats:
+- Any query above that actually matches a real partition (the `>`, `in`,
+  `between` ones) fails downstream with `UnsupportedFileSystemException: No
+  FileSystem for scheme "s3"` when Hive tries to actually fetch rows. This is
+  `date_partition_filter_repro` having a fake `s3://` `Location` with no real
+  backing data or `hadoop-aws` on `hive-client`'s classpath (moto only mocks
+  Glue's API, not S3 itself) — a metadata-only fixture, not a
+  partition-filtering problem. Confirmed via logs: `get_partitions_by_expr`
+  never throws for these queries, so the metastore call itself succeeds; the
+  failure is purely in the downstream `FetchTask` trying to list/read the
+  nonexistent location.
+- Timestamp-literal, quoted-string-literal, and mixed-predicate shapes (see
+  table below) have no corresponding column on `date_partition_filter_repro`
+  (no timestamp partition key, no string column) — not representable via
+  Hive CLI against this schema without extending `seed-glue.sh`.
+- Double-quoted literals aren't standard HQL string-literal syntax (Hive
+  uses single quotes; double quotes denote identifiers by default), so
+  that shape isn't expressible via the CLI at all.
+
+The fix's own test suite (`DatePartitionFilterQuotingTest`, added/extended
+across the PR's 4 commits) covers more predicate shapes than the CLI can
+reach — for reference, in case you extend the raw-thrift approach later:
+
+| Filter | What it exercises | Pre-fix behavior |
+|---|---|---|
+| `event_date = 2026-02-02` | Single `=` comparison | Unquoted → rejected |
+| `event_date > 2026-02-02` | Any bin-op, not just `>=`/`<` | Unquoted → rejected |
+| `start_time >= 2026-02-02 10:30:00` | Timestamp literal (space-separated), not just date | Unquoted → rejected |
+| `start_time >= 2026-02-02T10:30:00.123` | Timestamp with `T` separator + fractional seconds | Unquoted → rejected |
+| `event_date in (2026-01-01, 2026-02-02, 2026-03-03)` | IN-list literals | Unquoted → rejected |
+| `event_date between 2026-02-02 and 2026-08-04` | BETWEEN (lower-case) — needed its own regex since the literals are delimited by keywords, not an operator/comma | Added in the 4th commit (`56eac7a`) after the first cut of the fix missed it |
+| `event_date BETWEEN 2026-02-02 AND 2026-08-04` | BETWEEN (upper-case) — case-insensitivity | Same gap as above |
+| `event_date >= '2026-02-02'` | Already-quoted — idempotency/no-op check | Should pass through unchanged both before and after |
+| `event_date between '2026-02-02' and '2026-08-04'` | Already-quoted BETWEEN — idempotency | Same |
+| `name = 'report 2026-02-02'` | Date-shaped text *inside* a quoted string literal | Negative case — must NOT get re-quoted; a naive regex could double-quote or corrupt this |
+| `event_date >= 2026-02-02 and region = 'eu'` | Mixed: bare date + already-quoted string in the same filter | Only the date literal should be touched |
+| `event_date >= "2026-02-02"` | Double-quoted (not single-quoted) date literal | Covered in the review-feedback commit; must not be re-quoted or mishandled when combined with `replaceDoubleQuoteWithSingleQuotes` |
+
+Also note: `date_partition_filter_repro`'s `StorageDescriptor` (table-level
+*and* per-partition) needs `SerdeInfo`/`InputFormat`/`OutputFormat`/
+`Compressed`/`NumberOfBuckets`/`BucketColumns`/`SortColumns`/
+`StoredAsSubDirectories`, and the table needs `Owner`/`Retention`/
+`Parameters` set (see `seed-glue.sh`) — without them `describe formatted`
+fails with the same missing-field `InvalidObjectException`/
+`NullPointerException` gaps described below for the iceberg no-serde
+tables, and `SELECT` fails with `IllegalStateException: Property
+serialization.lib cannot be null` — both independent of the date-filter bug
+itself.
+
 ## Notes
 
 - `glue-endpoint` in the federation YAML maps directly to the Hive property
@@ -153,6 +289,69 @@ not the pattern-matching path).
   (`Got exception fetching get_all_functions`) but is harmless/cosmetic —
   it doesn't affect `get_databases`/`get_all_tables` results, so it can be
   ignored.
+- `get_partitions_by_filter`/`get_partitions` results can come back with
+  duplicates: WaggleDance's bundled Glue client parallelizes `GetPartitions`
+  across multiple `Segment`s (`SegmentNumber`/`TotalSegments`), expecting
+  Glue to return a disjoint slice per segment. moto's `GetPartitions`
+  handler (`moto/glue/responses.py`) never reads the `Segment` parameter at
+  all, so it returns the *full* matching set on every segment call —
+  WaggleDance then concatenates what it thinks are disjoint slices, so each
+  real match shows up once per segment (5 segments by default, so a single
+  matching partition comes back 5 times). This is a moto mocking gap, not a
+  WaggleDance or Glue-client bug — it isn't specific to any one query or
+  fix under test, so don't chase it as a regression.
+- There's a bare-date-literal bug fixed in
+  [`aws-glue-data-catalog-client-for-apache-hive-metastore#9`](https://github.com/ExpediaGroup/aws-glue-data-catalog-client-for-apache-hive-metastore/pull/9):
+  Hive/Spark clients push date-partition predicates through
+  `get_partitions_by_filter` with unquoted date literals (e.g.
+  `event_date >= 2026-02-02`), which Glue's `Expression` grammar rejects as
+  arithmetic. Seen in production via WaggleDance as
+  `InvalidObjectException: Unsupported expression '...'`, surfaced to Hive
+  clients as an opaque `TApplicationException: Internal error processing
+  get_partitions_by_filter` (`InvalidObjectException` isn't declared on that
+  Thrift method). Verified directly against this stack, keyed off the
+  WaggleDance version pinned in `docker-compose.yml`:
+  - **v1.14.8 (WaggleDance 4.1.8) and earlier**: reproduces the bug — debug
+    wire logs (`LOGLEVEL: debug`) show the `Expression` field reaching moto
+    unquoted, and moto's own `GetPartitions` grammar rejects it with
+    `InvalidInputException: Unsupported expression`, matching real Glue's
+    behavior.
+  - **v1.14.9 (WaggleDance 4.1.9) and later**: does not reproduce — the
+    `Expression` field arrives pre-quoted (`event_date >= '2026-02-02'`) and
+    the call succeeds. This predates PR #9 actually merging upstream (the
+    WD 4.1.9 tag was cut 2026-08-03, PR #9 merged 2026-08-06), so the fix was
+    evidently applied to WaggleDance's local `lib/*.jar` build before it was
+    formally upstreamed into the fork's git history — the pinned dependency
+    coordinate (`com.amazonaws.glue:aws-glue-datacatalog-hive3-client:3.4.0-WD-1`)
+    is a local, non-immutable Maven coordinate, so its version string doesn't
+    track this.
+  As noted above, none of this is exercisable via `hive-client`'s Hive CLI —
+  it never calls `get_partitions_by_filter`. The fix's own test suite
+  (`DatePartitionFilterQuotingTest`, added/extended across the PR's 4
+  commits) covers these predicate shapes, for reference:
+
+  | Filter | What it exercises | Pre-fix behavior |
+  |---|---|---|
+  | `event_date = 2026-02-02` | Single `=` comparison | Unquoted → rejected |
+  | `event_date > 2026-02-02` | Any bin-op, not just `>=`/`<` | Unquoted → rejected |
+  | `start_time >= 2026-02-02 10:30:00` | Timestamp literal (space-separated), not just date | Unquoted → rejected |
+  | `start_time >= 2026-02-02T10:30:00.123` | Timestamp with `T` separator + fractional seconds | Unquoted → rejected |
+  | `event_date in (2026-01-01, 2026-02-02, 2026-03-03)` | IN-list literals | Unquoted → rejected |
+  | `event_date between 2026-02-02 and 2026-08-04` | BETWEEN (lower-case) — needed its own regex since the literals are delimited by keywords, not an operator/comma | Added in the 4th commit (`56eac7a`) after the first cut of the fix missed it |
+  | `event_date BETWEEN 2026-02-02 AND 2026-08-04` | BETWEEN (upper-case) — case-insensitivity | Same gap as above |
+  | `event_date >= '2026-02-02'` | Already-quoted — idempotency/no-op check | Should pass through unchanged both before and after |
+  | `event_date between '2026-02-02' and '2026-08-04'` | Already-quoted BETWEEN — idempotency | Same |
+  | `name = 'report 2026-02-02'` | Date-shaped text *inside* a quoted string literal | Negative case — must NOT get re-quoted; a naive regex could double-quote or corrupt this |
+  | `event_date >= 2026-02-02 and region = 'eu'` | Mixed: bare date + already-quoted string in the same filter | Only the date literal should be touched |
+  | `event_date >= "2026-02-02"` | Double-quoted (not single-quoted) date literal | Covered in the review-feedback commit; must not be re-quoted or mishandled when combined with `replaceDoubleQuoteWithSingleQuotes` |
+
+  Also note: `date_partition_filter_repro`'s `StorageDescriptor` needs
+  `SerdeInfo`/`Compressed`/`NumberOfBuckets`/`BucketColumns`/`SortColumns`/
+  `StoredAsSubDirectories`, and the table needs `Owner`/`Retention`/
+  `Parameters` set (see `seed-glue.sh`) — without them `describe formatted`
+  fails with the same missing-field `InvalidObjectException`/
+  `NullPointerException` gaps described below for the iceberg no-serde
+  tables, independent of the date-filter bug itself.
 - `test_external_iceberg_table_no_serde` and `example_iceberg_table_no_serde`
   are deliberate negative test cases: Glue tables with no
   `InputFormat`/`OutputFormat`/`SerdeInfo` on their `StorageDescriptor`

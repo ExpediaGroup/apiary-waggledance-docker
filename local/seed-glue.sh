@@ -252,4 +252,57 @@ aws --endpoint-url "$ENDPOINT" glue create-table \
     }
   }'
 
-echo "Seeded testdb.no_tabletype, testdb.example_traces_table, testdb.example_s3_stream_table, testdb.test_external_iceberg_table_with_serdes, testdb.test_external_iceberg_table_no_serde, and testdb.example_iceberg_table_no_serde in mock Glue at $ENDPOINT"
+aws --endpoint-url "$ENDPOINT" glue create-table \
+  --database-name testdb \
+  --table-input '{
+    "Name": "date_partition_filter_repro",
+    "Owner": "test-owner",
+    "Retention": 0,
+    "StorageDescriptor": {
+      "Columns": [{"Name": "id", "Type": "bigint"}],
+      "Location": "s3://test-bucket/testdb/date_partition_filter_repro/",
+      "InputFormat": "org.apache.hadoop.mapred.TextInputFormat",
+      "OutputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+      "Compressed": false,
+      "NumberOfBuckets": -1,
+      "SerdeInfo": {
+        "SerializationLibrary": "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe",
+        "Parameters": {}
+      },
+      "BucketColumns": [],
+      "SortColumns": [],
+      "Parameters": {},
+      "StoredAsSubDirectories": false
+    },
+    "PartitionKeys": [{"Name": "event_date", "Type": "date"}],
+    "TableType": "EXTERNAL_TABLE",
+    "Parameters": {"comment": "test"}
+  }'
+
+# Fixture for testing date-partition predicate pruning (see local/README.md's
+# "Date-partition filter quoting (PR #9)" section).
+aws --endpoint-url "$ENDPOINT" glue batch-create-partition \
+  --database-name testdb \
+  --table-name date_partition_filter_repro \
+  --partition-input-list '[
+    {"Values": ["2026-01-15"], "StorageDescriptor": {
+      "Location": "s3://test-bucket/testdb/date_partition_filter_repro/event_date=2026-01-15/",
+      "InputFormat": "org.apache.hadoop.mapred.TextInputFormat",
+      "OutputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+      "SerdeInfo": {
+        "SerializationLibrary": "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe",
+        "Parameters": {}
+      }
+    }},
+    {"Values": ["2026-03-01"], "StorageDescriptor": {
+      "Location": "s3://test-bucket/testdb/date_partition_filter_repro/event_date=2026-03-01/",
+      "InputFormat": "org.apache.hadoop.mapred.TextInputFormat",
+      "OutputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+      "SerdeInfo": {
+        "SerializationLibrary": "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe",
+        "Parameters": {}
+      }
+    }}
+  ]'
+
+echo "Seeded testdb.no_tabletype, testdb.example_traces_table, testdb.example_s3_stream_table, testdb.test_external_iceberg_table_with_serdes, testdb.test_external_iceberg_table_no_serde, testdb.example_iceberg_table_no_serde, and testdb.date_partition_filter_repro (2 partitions) in mock Glue at $ENDPOINT"

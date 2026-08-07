@@ -179,18 +179,30 @@ but unrelated Hive parser quirk.
 `local/test-get-partitions-by-filter.sh`. It calls `get_partitions_by_filter`
 directly over thrift (via a throwaway `hmsclient` container, no host
 installs), bypassing HQL parsing entirely — the same way Spark's pushdown
-does — with 6 bare-literal filter shapes plus 2 already-quoted controls,
-against `testdb.date_partition_filter_repro`:
+does — against both `testdb.date_partition_filter_repro` (8 date-literal
+shapes) and `testdb.timestamp_partition_filter_repro` (5 timestamp-literal
+shapes):
 
 ```bash
 local/test-get-partitions-by-filter.sh
 ```
 
 Verified results:
-- **v1.14.9 (WaggleDance 4.1.9, current pin)**: all 8 shapes `OK`.
-- **v1.14.8 (WaggleDance 4.1.8)**: the 6 bare-literal shapes
-  `FAILED: TApplicationException -- Internal error processing
-  get_partitions_by_filter`; the 2 already-quoted controls still `OK`
+- **v1.14.9 (WaggleDance 4.1.9, current pin)**: all date shapes `OK`; all
+  timestamp shapes `OK` **except** the `T`-separated-with-fractional-seconds
+  one, which fails even post-fix — but for an unrelated reason. Debug wire
+  logs confirm the fix quotes it correctly
+  (`Expression: "start_time >= '2026-02-02T09:00:00.123'"`); Glue's own
+  Expression grammar then rejects it regardless of quoting
+  (`InvalidObjectException: Timestamp format must be
+  yyyy-mm-dd hh:mm:ss[.fffffffff] ... is not a timestamp.`). Glue's
+  timestamp literals require a space separator, not ISO 8601's `T` — a real
+  Glue format limitation that PR #9 doesn't fix and isn't scoped to fix
+  (its own unit tests mock Glue and never hit this validation).
+- **v1.14.8 (WaggleDance 4.1.8)**: all bare-literal shapes (date and
+  timestamp, including the `T`-separated one) fail with
+  `TApplicationException: Internal error processing
+  get_partitions_by_filter`; all already-quoted controls still `OK`
   (confirming they were never broken, and this is a real regression test
   rather than a config artifact).
 

@@ -9,7 +9,9 @@
 primary-meta-store:
   name: primary
   database-prefix: ''
-  access-control-type: READ_ONLY
+  access-control-type: READ_AND_WRITE_ON_DATABASE_WHITELIST
+  writable-database-white-list:
+  - testdb
   latency: 5000
   glue-config:
     glue-account-id: '123456789012'

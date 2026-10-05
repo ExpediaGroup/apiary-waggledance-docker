@@ -82,6 +82,9 @@ local/query-waggledance.sh
 # Test the get_partitions_by_filter date-quoting fix (PR #9) directly
 local/test-get-partitions-by-filter.sh
 
+# Test the Iceberg commit compare-and-swap (alterTable TOCTOU fix, PR #10) directly
+local/test-iceberg-cas-commit.sh
+
 # Tear down
 docker compose -f local/docker-compose.yml down
 ```
@@ -188,7 +191,7 @@ local/test-get-partitions-by-filter.sh
 ```
 
 Verified results:
-- **v1.14.9 (WaggleDance 4.1.9, current pin)**: all date shapes `OK`; all
+- **v1.14.10 (WaggleDance 4.1.11, current pin)**: all date shapes `OK`; all
   timestamp shapes `OK` **except** the `T`-separated-with-fractional-seconds
   one, which fails even post-fix — but for an unrelated reason. Debug wire
   logs confirm the fix quotes it correctly
@@ -279,6 +282,114 @@ fails with the same missing-field `InvalidObjectException`/
 tables, and `SELECT` fails with `IllegalStateException: Property
 serialization.lib cannot be null` — both independent of the date-filter bug
 itself.
+
+## Iceberg commit compare-and-swap (PR #10)
+
+[`aws-glue-data-catalog-client-for-apache-hive-metastore#10`](https://github.com/ExpediaGroup/aws-glue-data-catalog-client-for-apache-hive-metastore/pull/10)
+fixed a time-of-check/time-of-use (TOCTOU) bug in `alterTable`'s optimistic
+locking: it could silently drop an Iceberg commit instead of rejecting a
+stale one. `alterTable` now re-reads the live Glue table and does a
+compare-and-swap on `metadata_location` against the expected value before
+updating, throwing `InvalidOperationException` on a stale commit.
+
+Iceberg's own commit protocol (`HiveTableOperations.doCommit`) never goes
+through HQL — it calls thrift `alter_table_with_environment_context`
+directly, with `EnvironmentContext.properties["expected_parameter_key"] =
+"metadata_location"` and `["expected_parameter_value"] = ` the
+`metadata_location` the writer last read. That's not reachable via Hive CLI
+or a plain `hmsclient.alter_table()` call, so `local/test-iceberg-cas-commit.sh`
+drives it directly over raw thrift (same throwaway-container pattern as
+`test-get-partitions-by-filter.sh`), against `testdb.test_external_iceberg_table_with_serdes`:
+
+```bash
+local/test-iceberg-cas-commit.sh
+```
+
+1. **Valid commit** — `expected_parameter_value` matches the table's current
+   `metadata_location` → the update applies.
+2. **Stale commit** — `expected_parameter_value` is the *previous* (now
+   superseded) `metadata_location`, simulating a writer that lost a race →
+   must be rejected with `InvalidOperationException`, and the table's
+   `metadata_location` must be left on the winning commit, not overwritten.
+
+**Verified against this stack**: both cases pass on **v1.14.10 (WaggleDance
+4.1.11, current pin)** — the stale commit is rejected with `InvalidOperationException:
+The table has been modified. The parameter value for key 'metadata_location'
+is '...'. Expected value was '...'`.
+
+Two harness prerequisites this test needed, beyond what `seed-glue.sh` sets up:
+
+- **The federation must allow writes.** The default federation
+  (`access-control-type: READ_ONLY`) rejects any `alter_table` call outright
+  with `MetaException: Waggle Dance: You cannot perform this operation on
+  the virtual database`. `waggle-dance-federation.yml` is set to
+  `READ_AND_WRITE_ON_DATABASE_WHITELIST` with `testdb` whitelisted so this
+  test (and any future write-path test) can run.
+- **Use a `file://` table `Location`, not `s3://`, for any table you plan to
+  `alter_table` through WaggleDance.** This bare image has no `hadoop-aws`
+  on its classpath, so the Glue-to-Hive converter's filesystem touch during
+  `alter_table` throws `UnsupportedFileSystemException: No FileSystem for
+  scheme "s3"` — a harness gap (same root cause as the `s3://` `SELECT`
+  caveat above), not a bug in the CAS fix itself. The test script assumes
+  `test_external_iceberg_table_with_serdes` already has a `file://` location
+  seeded; if you reset the stack, re-point it before running:
+
+  ```bash
+  mkdir -p /tmp/iceberg-cas-test/metadata
+  AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=us-east-1 \
+    aws --endpoint-url http://localhost:5000 glue update-table --database-name testdb --table-input '{
+    "Name": "test_external_iceberg_table_with_serdes",
+    "Owner": "appuser",
+    "LastAccessTime": 1536,
+    "Retention": 2147483647,
+    "StorageDescriptor": {
+      "Columns": [
+        {"Name": "hotel_name", "Type": "string"},
+        {"Name": "hotel_id", "Type": "int"},
+        {"Name": "acq_hour", "Type": "int"},
+        {"Name": "acq_date", "Type": "date"}
+      ],
+      "Location": "file:///tmp/iceberg-cas-test",
+      "InputFormat": "org.apache.hadoop.mapred.FileInputFormat",
+      "OutputFormat": "org.apache.hadoop.mapred.FileOutputFormat",
+      "Compressed": false,
+      "NumberOfBuckets": 0,
+      "SerdeInfo": {"SerializationLibrary": "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe", "Parameters": {}},
+      "BucketColumns": [],
+      "SortColumns": [],
+      "Parameters": {},
+      "StoredAsSubDirectories": false
+    },
+    "PartitionKeys": [],
+    "TableType": "EXTERNAL_TABLE",
+    "Parameters": {
+      "numRows": "5",
+      "engine.hive.lock-enabled": "false",
+      "write.metadata.delete-after-commit.enabled": "true",
+      "uuid": "98b476e8-b47e-44e2-974f-bcb0a341259d",
+      "EXTERNAL": "TRUE",
+      "write.data.path": "file:///tmp/iceberg-cas-test/data",
+      "write.metadata.previous-versions-max": "100",
+      "numFiles": "1",
+      "table_type": "ICEBERG",
+      "previous_metadata_location": "s3://test-bucket/testdb/test_external_iceberg_table_with_serdes/metadata/00000-d6a9128b-58bd-44d9-acbe-d0493833bdcc.metadata.json",
+      "current-snapshot-id": "6299780294964445581",
+      "write.metadata.path": "file:///tmp/iceberg-cas-test/metadata",
+      "write.parquet.compression-codec": "snappy",
+      "totalSize": "2667",
+      "current-snapshot-timestamp-ms": "1758179722041",
+      "metadata_location": "file:///tmp/iceberg-cas-test/metadata/00001-8372c9c3-d762-43de-aa8a-34de2034affa.metadata.json",
+      "snapshot-count": "1"
+    }
+  }'
+  ```
+
+  (The `get_table` call through WaggleDance NPEs if the `StorageDescriptor`
+  is missing fields like `SerdeInfo`/`Compressed`/`NumberOfBuckets`/
+  `StoredAsSubDirectories` or the table is missing `Owner`/`Retention`/
+  `PartitionKeys` — same gap as the iceberg-no-serde tables below — so this
+  keeps those fields intact and only swaps the `s3://` paths for `file://`
+  ones.)
 
 ## Notes
 

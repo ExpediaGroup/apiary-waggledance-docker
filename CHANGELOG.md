@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.14.11] - 2026-10-09
+### Changed
+- Upgrade `WAGGLE_DANCE_VERSION` to `4.1.12` (was `4.1.11`). Glue `alterTable` now sends the table's `VersionId` for all tables, not just Iceberg. See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)
+
 ## [1.14.10] - 2026-10-05
 ### Changed
 - Upgrade `WAGGLE_DANCE_VERSION` to `4.1.11` (was `4.1.10`). See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)

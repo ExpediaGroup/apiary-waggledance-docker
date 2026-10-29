@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.14.13] - 2026-10-29
+### Changed
+- Upgrade `WAGGLE_DANCE_VERSION` to `4.1.14` (was `4.1.13`). The bundled Glue client now quotes partition values for parameterised partition key types such as `varchar(10)`, so lookups by partition values (e.g. Spark `ALTER TABLE ... DROP PARTITION`) no longer fail with `Invalid partition expression!`. See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)
+
 ## [1.14.12] - 2026-10-22
 ### Changed
 - Upgrade `WAGGLE_DANCE_VERSION` to `4.1.13` (was `4.1.12`). The bundled Glue client no longer lets the AWS SDK retry non-idempotent Glue writes, so an ambiguous `UpdateTable` failure no longer leads Iceberg to delete the table's current `metadata.json`. See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)

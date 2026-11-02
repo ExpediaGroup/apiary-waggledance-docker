@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.14.14] - 2026-11-02
+### Changed
+- Upgrade `WAGGLE_DANCE_VERSION` to `4.1.15` (was `4.1.14`). The bundled Glue client now converts column statistics for `date` and `decimal` columns with no min/max (e.g. an all-NULL column written by Trino) without a `NullPointerException`, in both directions. See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)
+
 ## [1.14.13] - 2026-10-29
 ### Changed
 - Upgrade `WAGGLE_DANCE_VERSION` to `4.1.14` (was `4.1.13`). The bundled Glue client now quotes partition values for parameterised partition key types such as `varchar(10)`, so lookups by partition values (e.g. Spark `ALTER TABLE ... DROP PARTITION`) no longer fail with `Invalid partition expression!`. See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)

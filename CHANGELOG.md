@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.14.16] - 2026-11-10
+### Changed
+- Upgrade `WAGGLE_DANCE_VERSION` to `4.1.18` (was `4.1.17`). Renaming a table on a Glue metastore no longer drops the client connection (`TTransportException` / `Socket is closed by peer`); renames that can't be done now return an `InvalidOperationException`. Adds opt-in `aws.glue.iceberg.rename.enable` (default `false`) so `ALTER TABLE ... RENAME` works for Iceberg tables on a Glue metastore. See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)
+
 ## [1.14.15] - 2026-11-06
 ### Changed
 - Upgrade `WAGGLE_DANCE_VERSION` to `4.1.17` (was `4.1.15`; 4.1.16 was never published to Maven Central, and 4.1.17 is its re-release). The bundled Glue client now converts `double` column statistics with an unset or non-finite (`NaN`, `Infinity`) min/max correctly: the bound is omitted when writing to Glue instead of being sent as `0.0`, and a missing bound read from Glue no longer throws a `NullPointerException`. Adds opt-in `aws.glue.avro.schema-from-url.enable` (default `false`) so `get_fields`/`get_schema` for Avro tables return the columns from `avro.schema.url`/`avro.schema.literal`. See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)

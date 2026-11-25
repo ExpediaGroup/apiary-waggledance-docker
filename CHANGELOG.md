@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.14.17] - 2026-11-25
+### Changed
+- Upgrade `WAGGLE_DANCE_VERSION` to `4.2.1` (was `4.2.0`). It bundles a Glue client that can call Hive `MetaStoreEventListener`s after table and partition drops (`aws.glue.event.listeners`, off by default). See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)
+
+### Added
+- Add Apiary's `apiary-metastore-listener` (`-all` jar, version `APIARY_EXTENSIONS_VERSION`) to `/opt/waggle-dance/jars`, so `ApiarySnsListener` can be set in `aws.glue.event.listeners` to send SNS events for Glue table and partition drops. Nothing changes until that property is set. See [aws-glue-data-catalog-client-for-apache-hive-metastore#20](https://github.com/ExpediaGroup/aws-glue-data-catalog-client-for-apache-hive-metastore/pull/20).
+
 ## [1.14.16] - 2026-11-17
 ### Changed
 - Upgrade `WAGGLE_DANCE_VERSION` to `4.2.0` (was `4.1.17`). From 4.2.0 the Waggle Dance RPM is published as a [GitHub Release](https://github.com/ExpediaGroup/waggle-dance/releases) asset instead of to Maven Central, so the RPM is now downloaded from GitHub Releases. See [Changelog](https://github.com/ExpediaGroup/waggle-dance/blob/main/CHANGELOG.md)
